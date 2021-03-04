@@ -2,12 +2,12 @@ import numpy as np
 
 
 class Turn:
-    def __init__(self, turn_id, transcript, turn_label, belief_state, system_acts, system_transcript, asr=None, num=None):
+    def __init__(self, turn_id, transcript, turn_label, belief_state, system_transcript, asr=None, num=None):
         self.id = turn_id
         self.transcript = transcript
         self.turn_label = turn_label
         self.belief_state = belief_state
-        self.system_acts = system_acts
+        # self.system_acts = system_acts
         self.system_transcript = system_transcript
         self.asr = asr or []
         self.num = num or {}
@@ -17,7 +17,7 @@ class Turn:
                 'transcript': self.transcript,
                 'turn_label': self.turn_label,
                 'belief_state': self.belief_state,
-                'system_acts': self.system_acts,
+                # 'system_acts': self.system_acts,
                 'system_transcript': self.system_transcript,
                 'num': self.num}
 

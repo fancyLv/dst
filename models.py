@@ -1,16 +1,13 @@
-import torch
-import random
 import itertools
+import random
 
-from tqdm import tqdm
-from utils import RunningAverage, rindex, pad
-
+import torch
 from torch import nn
-
-
-# from pytorch_pretrained_bert.optimization import BertAdam
+from tqdm import tqdm
+from transformers import BertTokenizer, BertForSequenceClassification, AdamW
 from transformers import WEIGHTS_NAME, CONFIG_NAME
-from transformers import BertTokenizer, BertForSequenceClassification,AdamW
+
+from utils import RunningAverage, rindex, pad
 
 # Special Tokens
 CLS = '[CLS]'
@@ -26,7 +23,7 @@ def turn_to_examples(t, ontology, tokenizer):
     if len(t.asr) > 0:
         user_transcript = t.asr[0][0]
     context = ' '.join([t.system_transcript] + [SEP] + [user_transcript])
-    turn_label = set([(s, v) for s, v in t.turn_label])
+    turn_label = set([(d + '-' + s, v) for d, s, v in t.turn_label])
     for slot in ontology.slots:
         for value in ontology.values[slot]:
             candidate = slot + ' = ' + value
@@ -89,12 +86,8 @@ class Model(nn.Module):
             {'params': [p for n, p in param_optimizer if not any(nd in n for nd in no_decay)], 'weight_decay': 0.01},
             {'params': [p for n, p in param_optimizer if any(nd in n for nd in no_decay)], 'weight_decay': 0.0}
         ]
-        # self.optimizer = BertAdam(optimizer_grouped_parameters,
-        #                           lr=args.learning_rate,
-        #                           warmup=args.warmup_proportion,
-        #                           t_total=num_train_iters)
         self.optimizer = AdamW(optimizer_grouped_parameters,
-                                  lr=args.learning_rate)
+                               lr=args.learning_rate)
         self.optimizer.zero_grad()
 
     def run_train(self, dataset, ontology, args):

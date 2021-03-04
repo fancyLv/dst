@@ -15,7 +15,7 @@ def create_parser():
     # Required Parameters
     parser.add_argument('--data_dir', type=Path, required=True)
     parser.add_argument('--bert_model', type=str, required=True,
-                        choices=['bert-base-uncased', 'bert-large-uncased'])
+                        choices=['bert-base-uncased', 'bert-large-uncased', 'hfl/chinese-bert-wwm-ext'])
     parser.add_argument('--output_dir', type=Path, required=True)
 
     # Training Parameters
@@ -37,7 +37,7 @@ def create_parser():
 def load_dataset(base_path):
     dataset = {}
     dataset['train'] = Dataset.from_dict(read_json(base_path / 'train.json'))
-    dataset['dev'] = Dataset.from_dict(read_json(base_path / 'dev.json'))
+    dataset['dev'] = Dataset.from_dict(read_json(base_path / 'val.json'))
     dataset['test'] = Dataset.from_dict(read_json(base_path / 'test.json'))
     ontology = Ontology.from_dict(read_json(base_path / 'ontology.json'))
 

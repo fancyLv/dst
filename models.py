@@ -97,6 +97,8 @@ class Model(nn.Module):
 
         # Generate training examples
         turns = list(dataset['train'].iter_turns())
+        if args.debug:
+            turns = turns[:args.num_processes]
         train_examples = [turn_to_examples(t, ontology, tokenizer) for t in turns]
         train_examples = list(itertools.chain.from_iterable(train_examples))
         print('Generated training examples')

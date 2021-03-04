@@ -31,6 +31,10 @@ def create_parser():
     parser.add_argument('--do_train', action='store_true', help='Whether to run training.')
     parser.add_argument('--do_eval', action='store_true', help='Whether to run evaluation.')
 
+    parser.add_argument('--debug', action='store_true',
+                        help='Whether to use debug mode, In debug mode, you can quickly run a complete process')
+    parser.add_argument('--num_processes', type=int, default=32, help='In debug mode, number of train data')
+
     return parser
 
 

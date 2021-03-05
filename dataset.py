@@ -71,10 +71,10 @@ class Dataset:
         for d in self.dialogues:
             pred_state = {}
             for t in d.turns:
-                gold_request = set([(s, v) for s, v in t.turn_label if s == 'request'])
-                gold_inform = set([(s, v) for s, v in t.turn_label if s != 'request'])
-                pred_request = set([(s, v) for s, v in preds[i] if s == 'request'])
-                pred_inform = set([(s, v) for s, v in preds[i] if s != 'request'])
+                gold_request = set([(d + '-' + s, v) for d, s, v in t.turn_label if s == 'Request'])
+                gold_inform = set([(d + '-' + s, v) for d, s, v in t.turn_label if s != 'Request'])
+                pred_request = set([(s, v) for s, v in preds[i] if s == 'Request'])
+                pred_inform = set([(s, v) for s, v in preds[i] if s != 'Request'])
                 request.append(gold_request == pred_request)
                 inform.append(gold_inform == pred_inform)
 
@@ -83,11 +83,12 @@ class Dataset:
                 for s, v in pred_inform:
                     pred_state[s] = v
                 for b in t.belief_state:
-                    for s, v in b['slots']:
-                        if b['act'] != 'request':
-                            gold_recovered.add((b['act'], fix.get(s.strip(), s.strip()), fix.get(v.strip(), v.strip())))
+                    d, s, v = b['slots']
+                    if b['act'] != 'Request':
+                        # gold_recovered.add((b['act'], fix.get(s.strip(), s.strip()), fix.get(v.strip(), v.strip())))
+                        gold_recovered.add((b['act'], d.strip() + '-' + s.strip(), v.strip()))
                 for s, v in pred_state.items():
-                    pred_recovered.add(('inform', s, v))
+                    pred_recovered.add(('Inform', s, v))
                 joint_goal.append(gold_recovered == pred_recovered)
                 i += 1
         return {'turn_inform': np.mean(inform), 'turn_request': np.mean(request), 'joint_goal': np.mean(joint_goal)}

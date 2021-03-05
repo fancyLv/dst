@@ -143,7 +143,7 @@ class Model(nn.Module):
                 labels = torch.LongTensor(labels).to(args.device)
 
                 # Calculate loss
-                loss = model(input_ids, token_type_ids, labels=labels)[0]
+                loss = model(input_ids, token_type_ids, labels=labels).loss
                 if args.n_gpus > 1:
                     loss = loss.mean()
                 if args.gradient_accumulation_steps > 1:
@@ -189,7 +189,7 @@ class Model(nn.Module):
             token_type_ids, _ = pad(token_type_ids, args.device)
 
             # Forward Pass
-            logits = model(input_ids, token_type_ids)[1]
+            logits = model(input_ids, token_type_ids).logits
             probs = torch.softmax(logits, dim=-1)[:, 1].cpu().data.numpy()
 
             # Update preds
@@ -204,11 +204,15 @@ class Model(nn.Module):
 
     def run_dev(self, dataset, ontology, args):
         turns = list(dataset['dev'].iter_turns())
+        if args.debug:
+            turns = turns[:args.num_processes]
         preds = [self.predict_turn(t, ontology, args) for t in turns]
         return dataset['dev'].evaluate_preds(preds)
 
     def run_test(self, dataset, ontology, args):
         turns = list(dataset['test'].iter_turns())
+        if args.debug:
+            turns = turns[:args.num_processes]
         preds = [self.predict_turn(t, ontology, args) for t in turns]
         return dataset['test'].evaluate_preds(preds)
 

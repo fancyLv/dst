@@ -7,9 +7,9 @@
 import json
 import os
 import zipfile
+from collections import defaultdict
 
 from tqdm import tqdm
-from collections import defaultdict
 
 processed_data_dir = './data/crosswoz/processed'
 
